@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "applications", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"job_id", "application_id"})   // Prevents applying twice to same job
+        @UniqueConstraint(columnNames = {"job_id", "applicant_id"})   // Prevents applying twice to same job
 })
 @Data
 @NoArgsConstructor
