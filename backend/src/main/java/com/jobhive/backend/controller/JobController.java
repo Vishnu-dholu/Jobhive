@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -32,7 +33,10 @@ public class JobController {
 
     // POST /api/jobs
     @PostMapping
-    public ResponseEntity<JobResponse> createJob(@Valid @RequestBody JobRequest request){
-        return new ResponseEntity<>(jobService.createJob(request), HttpStatus.CREATED);
+    public ResponseEntity<JobResponse> createJob(@Valid @RequestBody JobRequest request, Authentication authentication) {
+        // 1. Get the email from the token
+        String email = authentication.getName();
+        // 2. Pass it to the service
+        return new ResponseEntity<>(jobService.createJob(request, email), HttpStatus.CREATED);
     }
 }

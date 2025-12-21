@@ -37,20 +37,16 @@ public class JobService {
     }
 
     // 2. Create a job
-    public JobResponse createJob(JobRequest request){
-        // Find the recruiter
-        User recruiter = userRepository.findById(request.getPostedByUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + request.getPostedByUserId() + " not found"));
+    public JobResponse createJob(JobRequest request, String userEmail){
+        // Find the use who is logged in
+        User recruiter = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Convert DTO -> Entity
-        Job job = Job.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .location(request.getLocation())
-                .salary(request.getSalary())
-                .type(request.getType())
-                .postedBy(recruiter)
-                .build();
+        Job job = mapToEntity(request);
+
+        // Link the job to the user
+        job.setPostedBy(recruiter);
 
         // Save to DB
         Job savedJob = jobRepository.save(job);
@@ -59,7 +55,7 @@ public class JobService {
         return mapToResponse(savedJob);
     }
 
-    // Helper method to convert Entity -> DTO
+    // Helper 1: convert Entity -> DTO
     private JobResponse mapToResponse(Job job){
         return JobResponse.builder()
                 .id(job.getId())
@@ -70,6 +66,17 @@ public class JobService {
                 .type(job.getType())
                 .postedAt(job.getPostedAt())
                 .postedByRecruiterName(job.getPostedBy().getName())
+                .build();
+    }
+
+    // Helper 2: convert DTO -> Entity
+    private Job mapToEntity(JobRequest request){
+        return Job.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .location(request.getLocation())
+                .salary(request.getSalary())
+                .type(request.getType())
                 .build();
     }
 }

@@ -26,7 +26,4 @@ public class JobRequest {
 
     @NotNull(message = "Job Type is required")
     private JobType type;
-
-    @NotNull
-    private Long postedByUserId;    // We only need the ID, not the full User object
 }
