@@ -14,6 +14,11 @@ public class ApplicationDTO {
     private Long jobId;                 // Which job ?
     private String jobTitle;            // Job Title
     private String jobLocation;         // Location
+
+    private Long applicantId;
+    private String applicantName;
+    private String applicantEmail;
+
     private ApplicationStatus status;
     private LocalDateTime appliedAt;
 }

@@ -1,6 +1,7 @@
 package com.jobhive.backend.controller;
 
 import com.jobhive.backend.dto.ApplicationDTO;
+import com.jobhive.backend.entity.ApplicationStatus;
 import com.jobhive.backend.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,8 +33,29 @@ public class ApplicationController {
 
     @GetMapping("/my-applications")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<List<ApplicationDTO>> getMyApplications(Authentication authentication){
+    public ResponseEntity<List<ApplicationDTO>> getMyApplications(Authentication authentication) {
         String email = authentication.getName();
-        return ResponseEntity.ok(applicationService.getMyApplication(email));
+        return ResponseEntity.ok(applicationService.getMyApplications(email));
+    }
+
+    @GetMapping("/jobs/{jobId}")
+    @PreAuthorize("hasRole('RECRUITER')")
+    public ResponseEntity<List<ApplicationDTO>> getApplicationsForJob(@PathVariable Long jobId, Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(applicationService.getApplicationsForJob(jobId, email));
+    }
+
+    @PutMapping("/{applicationId}/status")
+    @PreAuthorize("hasRole('RECRUITER')")
+    public ResponseEntity<String> updateStatus(
+            @PathVariable Long applicationId,
+            @RequestParam ApplicationStatus status,
+            Authentication authentication
+            ){
+        String email = authentication.getName();
+
+        applicationService.updateApplicationStatus(applicationId, status, email);
+
+        return ResponseEntity.ok("Application status updated to " + status);
     }
 }
