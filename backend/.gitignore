@@ -34,3 +34,4 @@ build/
 
 *.class
 .DS_Store
+uploads/

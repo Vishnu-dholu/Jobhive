@@ -11,8 +11,14 @@ import com.jobhive.backend.repository.JobRepository;
 import com.jobhive.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +28,11 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
-    public void applyForJob(Long jobId, String applicantEmail){
+    private final String UPLOAD_DIR = "uploads/";
+
+    public void applyForJob(Long jobId, String applicantEmail, MultipartFile resumeFile) throws IOException {
 
         // 1. Find the Job
         Job job = jobRepository.findById(jobId)
@@ -39,11 +48,21 @@ public class ApplicationService {
             throw new RuntimeException("You have already applied for this job!");
         }
 
+        String filename = UUID.randomUUID() + "_" + resumeFile.getOriginalFilename();
+        Path path = Paths.get(UPLOAD_DIR + filename);
+
+        // Create directory if it doesn't exist
+        Files.createDirectories(path.getParent());
+        // Save file
+        Files.write(path, resumeFile.getBytes());
+
+
         // 4. Create and Save Application
         Application application = Application.builder()
                 .job(job)
                 .applicant(applicant)
                 .status(ApplicationStatus.PENDING)
+                .resumeUrl(path.toString())
                 .build();
 
         applicationRepository.save(application);
@@ -126,5 +145,16 @@ public class ApplicationService {
         application.setStatus(newStatus);
 
         applicationRepository.save(application);
+
+        // SEND EMAIL NOTIFICATION
+        String applicantEmail = application.getApplicant().getEmail();
+        String jobTitle = application.getJob().getTitle();
+
+        String subject = "Update on your application for " + jobTitle;
+        String body = "Hello " + application.getApplicant().getName() + ",\n\n" +
+                "Your application status for " + jobTitle + " has been updated to: " + newStatus + ".\n\n" +
+                "Best Regards,\nJobHive Team";
+
+        emailService.sendEmail(applicantEmail, subject, body);
     }
 }

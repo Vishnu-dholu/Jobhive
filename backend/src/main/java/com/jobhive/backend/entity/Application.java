@@ -38,5 +38,8 @@ public class Application {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "applicant_id", nullable = false)
     private User applicant;
+
+    @Column(name = "resume_url")
+    private String resumeUrl;
 }
 

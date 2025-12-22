@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,14 +23,20 @@ public class ApplicationController {
 
     @PostMapping("/{jobId}/apply")
     @PreAuthorize("hasRole('APPLICANT')")
-    public ResponseEntity<String> applyForJob(@PathVariable Long jobId, Authentication authentication) {
+    public ResponseEntity<String> applyForJob(
+            @PathVariable Long jobId,
+            @RequestParam("resume") MultipartFile resume,
+            Authentication authentication) {
         // 1. Get current user's email
         String email = authentication.getName();
 
-        // 2. Call service
-        applicationService.applyForJob(jobId, email);
-
-        return new ResponseEntity<>("Application submitted successfully!", HttpStatus.CREATED);
+        try{
+            // 2. Call service
+            applicationService.applyForJob(jobId, email, resume);
+            return new ResponseEntity<>("Application submitted successfully!", HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Could not upload resume");
+        }
     }
 
     @GetMapping("/my-applications")
