@@ -10,10 +10,13 @@ import com.jobhive.backend.repository.ApplicationRepository;
 import com.jobhive.backend.repository.JobRepository;
 import com.jobhive.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -156,5 +159,35 @@ public class ApplicationService {
                 "Best Regards,\nJobHive Team";
 
         emailService.sendEmail(applicantEmail, subject, body);
+    }
+
+    public Resource getResumeFile(Long applicationId, String email) throws MalformedURLException {
+        // 1. Find Application
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        // 2. SECURITY CHECK
+        // Allow if: User is the Applicant OR User is the Recruiter who posted the job
+        User requestor = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        boolean isApplicant = application.getApplicant().getId().equals(requestor.getId());
+        boolean isRecruiter = application.getJob().getPostedBy().getId().equals(requestor.getId());
+
+        if(!isApplicant && !isRecruiter){
+            throw new RuntimeException("Unauthorized: You cannot access this resume");
+        }
+
+        // 3. Load FIle
+        String filePath = application.getResumeUrl();
+        Path path = Paths.get(filePath);
+
+        Resource resource = new UrlResource(path.toUri());
+
+        if(resource.exists() && resource.isReadable()){
+            return resource;
+        } else {
+            throw new RuntimeException("Could not read the file!");
+        }
     }
 }

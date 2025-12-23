@@ -6,6 +6,7 @@ import com.jobhive.backend.entity.JobType;
 import com.jobhive.backend.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,12 +25,14 @@ public class JobController {
 
     // GET  /api/jobs
     @GetMapping
-    public ResponseEntity<List<JobResponse>> getAllJobs(
+    public ResponseEntity<Page<JobResponse>> getAllJobs(
             @RequestParam(required = false) String location,
             @RequestParam(required = false)BigDecimal minSalary,
-            @RequestParam(required = false)JobType type
+            @RequestParam(required = false)JobType type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
             ){
-        return ResponseEntity.ok(jobService.getAllJobs(location, minSalary, type));
+        return ResponseEntity.ok(jobService.getAllJobs(location, minSalary, type, page, size));
     }
 
     // POST /api/jobs

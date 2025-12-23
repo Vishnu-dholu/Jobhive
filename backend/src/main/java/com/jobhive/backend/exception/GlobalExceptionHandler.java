@@ -9,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.FORBIDDEN.value());
         body.put("error", "Forbidden");
-        body.put("message", "Access Denied: You do not have the required role (Recruiter) to perform this action.");
+        body.put("message", "Access Denied: You do not have the required role to perform this action.");
 
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
@@ -61,5 +62,15 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.EXPECTATION_FAILED.value(),
+                "File is too large! Maximum allowed size is 1MB.", // You can configure this size
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
     }
 }

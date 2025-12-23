@@ -10,6 +10,10 @@ import com.jobhive.backend.repository.JobRepository;
 import com.jobhive.backend.repository.UserRepository;
 import com.jobhive.backend.specification.JobSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +29,27 @@ public class JobService {
     private final UserRepository userRepository;
 
     // 1. Get all jobs
-    public List<JobResponse> getAllJobs(String location, BigDecimal minSalary, JobType type){
+    public Page<JobResponse> getAllJobs(String location, BigDecimal minSalary, JobType type, int page, int size){
 
-        // 1. Build the dynamic query
-        Specification<Job> spec = JobSpecification.filterJobs(location, minSalary, type);
+        // 1. Create Pagination Request (Sort by Posted Date DESC)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("postedAt").descending());
 
-        // 2. Pass the 'spec' to findAll()
-        return jobRepository.findAll(spec).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        // 2. Fetch Paginated Data from Repo
+        Page<Job> jobPage = jobRepository.searchJobs(location, minSalary, type, pageable);
+
+        // 3. Map Page<Job> to Page<JobResponse>
+        // .map() here is a special Spring Data method, not Stream .map()
+        return jobPage.map(job -> JobResponse.builder()
+                .id(job.getId())
+                .title(job.getTitle())
+                .description(job.getDescription())
+                .location(job.getLocation())
+                .salary(job.getSalary())
+                .type(job.getType())
+                .postedAt(job.getPostedAt())
+                .postedByRecruiterName(job.getPostedBy().getName())
+                .build()
+        );
     }
 
     // 2. Create a job
