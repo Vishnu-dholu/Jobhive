@@ -45,6 +45,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // ONLY GET requests for jobs are public (Anyone can view)
                         .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
+                        // ALLOW SWAGGER UI ENDPOINTS
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         // Lock everything else (we will refine this later)
                         .anyRequest().authenticated()
                 )
