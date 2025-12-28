@@ -1,30 +1,26 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import Login from "./pages/Login"; // <--- Import the real Login page
+import Dashboard from "./pages/Dashboard";
+import Jobs from "./pages/Jobs";
 
-// Simple placeholders with TS types
-const Login = () => (
-  <h1 className="text-3xl font-bold text-center mt-10">Login Page</h1>
-);
+// Placeholders for now
 const Register = () => (
-  <h1 className="text-3xl font-bold text-center mt-10">Register Page</h1>
+  <h1 className="text-center mt-10">Register Page (Coming Soon)</h1>
 );
-const Dashboard = () => (
-  <h1 className="text-3xl font-bold text-center mt-10">Dashboard</h1>
-);
+const Profile = () => <div className="p-10 text-center">Profile Page</div>;
 
 function App() {
   return (
     <Router>
-      {/* Toaster for global notifications */}
-      <Toaster position="top-right" reverseOrder={false} />
-
-      <div className="min-h-screen bg-base-200">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
-      </div>
+      <Toaster position="top-right" />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/jobs" element={<Jobs />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
     </Router>
   );
 }
