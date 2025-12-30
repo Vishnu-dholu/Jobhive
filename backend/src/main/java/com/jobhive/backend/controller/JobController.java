@@ -14,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -43,5 +42,10 @@ public class JobController {
         String email = authentication.getName();
         // 2. Pass it to the service
         return new ResponseEntity<>(jobService.createJob(request, email), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<JobResponse> getJobById(@PathVariable Long id){
+        return ResponseEntity.ok(jobService.getJobById(id));
     }
 }

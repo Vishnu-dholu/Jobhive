@@ -1,13 +1,14 @@
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 import {
   Briefcase,
+  FileText,
   LayoutDashboard,
   LogOut,
   PlusCircle,
   User,
-} from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+} from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface TokenPayload {
   sub: string; // Email
@@ -22,17 +23,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [userEmail, setUserEmail] = useState("User");
-  const [userRole, setUserRole] = useState("USER");
+  const [userEmail, setUserEmail] = useState('User');
+  const [userRole, setUserRole] = useState('USER');
 
   useEffect(() => {
     // 1. Get User Info from Token
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
 
     if (!token) {
       // No token? Kick them out.
       // (In a real app, use a proper ProtectedRoute wrapper)
-      navigate("/");
+      navigate('/');
       return;
     }
 
@@ -42,45 +43,48 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       // The backend returns roles like "ROLE_RECRUITER", let's clean it
       const roles = decoded.roles || [];
-      const role = roles.length > 0 ? roles[0].replace("ROLE_", "") : "USER";
+      const role = roles.length > 0 ? roles[0].replace('ROLE_', '') : 'USER';
       setUserRole(role);
     } catch (e) {
-      console.error("Invalid Token");
-      localStorage.removeItem("token");
-      navigate("/");
+      console.error('Invalid Token');
+      localStorage.removeItem('token');
+      navigate('/');
     }
   }, [navigate]);
 
   // 2. Handle Logout
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
+    localStorage.removeItem('token');
+    navigate('/');
   };
 
   // 3. Define Menu Items
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-    { name: "Find Jobs", path: "/jobs", icon: Briefcase },
-    ...(userRole === "RECRUITER"
-      ? [{ name: "Post a Job", path: "/post-job", icon: PlusCircle }]
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Find Jobs', path: '/jobs', icon: Briefcase },
+    ...(userRole !== 'RECRUITER'
+      ? [{ name: 'My Applications', path: '/my-applications', icon: FileText }]
       : []),
-    { name: "Profile", path: "/profile", icon: User },
+    ...(userRole === 'RECRUITER'
+      ? [{ name: 'Post a Job', path: '/post-job', icon: PlusCircle }]
+      : []),
+    { name: 'Profile', path: '/profile', icon: User },
   ];
 
   return (
-    <div className="flex h-screen bg-base-200">
+    <div className="bg-base-200 flex h-screen">
       {/* --- SIDEBAR --- */}
-      <aside className="w-64 bg-base-100 shadow-xl hidden md:flex flex-col">
-        <div className="p-4 border-b border-base-200">
-          <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-            <Briefcase className="w-8 h-8" /> JobHive
+      <aside className="bg-base-100 hidden w-64 flex-col shadow-xl md:flex">
+        <div className="border-base-200 border-b p-4">
+          <h1 className="text-primary flex items-center gap-2 text-2xl font-bold">
+            <Briefcase className="h-8 w-8" /> JobHive
           </h1>
           <span className="badge badge-ghost badge-sm mt-2">
             {userRole} MODE
           </span>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 space-y-2 p-4">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -88,42 +92,42 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
                   isActive
-                    ? "bg-primary text-primary-content"
-                    : "hover:bg-base-200"
+                    ? 'bg-primary text-primary-content'
+                    : 'hover:bg-base-200'
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="h-5 w-5" />
                 <span className="font-medium">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-base-200">
+        <div className="border-base-200 border-t p-4">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 w-full rounded-lg transition-colors"
+            className="text-error hover:bg-error/10 flex w-full items-center gap-3 rounded-lg px-4 py-3 transition-colors"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="h-5 w-5" />
             <span className="font-medium">Logout</span>
           </button>
         </div>
       </aside>
 
       {/* --- MAIN CONTENT AREA --- */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Navbar (Mobile only, or for User Info) */}
-        <header className="bg-base-100 shadow-sm p-4 flex justify-between items-center md:justify-end">
-          <div className="md:hidden font-bold text-xl">JobHive</div>
+        <header className="bg-base-100 flex items-center justify-between p-4 shadow-sm md:justify-end">
+          <div className="text-xl font-bold md:hidden">JobHive</div>
           <div className="flex items-center gap-4">
-            <div className="text-right hidden md:block">
+            <div className="hidden text-right md:block">
               <p className="text-sm font-bold">{userEmail}</p>
-              <p className="text-xs text-base-content/60">Logged In</p>
+              <p className="text-base-content/60 text-xs">Logged In</p>
             </div>
             <div className="avatar placeholder">
-              <div className="bg-neutral text-neutral-content rounded-full w-10">
+              <div className="bg-neutral text-neutral-content w-10 rounded-full">
                 <span className="text-xl">{userEmail[0].toUpperCase()}</span>
               </div>
             </div>

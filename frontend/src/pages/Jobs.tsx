@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
-import type { Job } from "../types/job";
-import { getJobs } from "../api/jobService";
-import toast from "react-hot-toast";
-import DashboardLayout from "../components/DashboardLayout";
-import { Briefcase, IndianRupee, MapPin, Search } from "lucide-react";
+import { useEffect, useState } from 'react';
+import type { Job } from '../types/job';
+import { getJobs } from '../api/jobService';
+import toast from 'react-hot-toast';
+import DashboardLayout from '../components/DashboardLayout';
+import { Briefcase, IndianRupee, MapPin, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Jobs = () => {
+  const navigate = useNavigate();
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,8 +17,8 @@ const Jobs = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   // Filter state
-  const [locationFilter, setLocationFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
 
   // Fetch Data Function
   const fetchJobs = async () => {
@@ -30,8 +33,8 @@ const Jobs = () => {
       setJobs(data.content);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error("Failed to fetch jobs", error);
-      toast.error("Could not load jobs");
+      console.error('Failed to fetch jobs', error);
+      toast.error('Could not load jobs');
     } finally {
       setLoading(false);
     }
@@ -57,7 +60,7 @@ const Jobs = () => {
           <div className="card-body py-4">
             <form
               onSubmit={handleSearch}
-              className="flex flex-col md:flex-row gap-4 items-end"
+              className="flex flex-col items-end gap-4 md:flex-row"
             >
               {/* Location Input */}
               <div className="form-control w-full md:w-1/3">
@@ -65,7 +68,7 @@ const Jobs = () => {
                   <span className="label-text">Location</span>
                 </label>
                 <label className="input input-bordered flex items-center gap-2">
-                  <MapPin className="w-4 h-4 opacity-70" />
+                  <MapPin className="h-4 w-4 opacity-70" />
                   <input
                     type="text"
                     className="grow"
@@ -95,7 +98,7 @@ const Jobs = () => {
 
               {/* Search button */}
               <button className="btn btn-primary w-full md:w-auto">
-                <Search className="w-4 h-4" /> Search
+                <Search className="h-4 w-4" /> Search
               </button>
             </form>
           </div>
@@ -103,59 +106,62 @@ const Jobs = () => {
 
         {/* --- 2. JOB LIST --- */}
         {loading ? (
-          <div className="text-center py-20">
+          <div className="py-20 text-center">
             <span className="loading loading-spinner loading-lg text-primary"></span>
           </div>
         ) : jobs.length === 0 ? (
-          <div className="text-center py-20 text-gray-50">
+          <div className="py-20 text-center text-gray-50">
             No jobs found matching your criteria.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-base-200"
+                className="card bg-base-100 border-base-200 border shadow-xl transition-shadow duration-300 hover:shadow-2xl"
               >
                 <div className="card-body">
                   <h2 className="card-title text-primary">
                     {job.title}
-                    {job.type === "REMOTE" && (
+                    {job.type === 'REMOTE' && (
                       <div className="badge badge-secondary badge-sm">
                         REMOTE
                       </div>
                     )}
 
-                    {job.type === "HYBRID" && (
+                    {job.type === 'HYBRID' && (
                       <div className="badge badge-accent badge-sm text-white">
                         HYBRID
                       </div>
                     )}
 
-                    {job.type === "ONSITE" && (
+                    {job.type === 'ONSITE' && (
                       <div className="badge badge-ghost badge-sm">ONSITE</div>
                     )}
                   </h2>
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                  <p className="mb-4 line-clamp-2 text-sm text-gray-500">
                     {job.description}
                   </p>
 
-                  <div className="flex flex-col gap-2 text-sm text-gray-600 mb-4">
+                  <div className="mb-4 flex flex-col gap-2 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
-                      <Briefcase className="w-4 h-4" />{" "}
+                      <Briefcase className="h-4 w-4" />{' '}
                       {job.postedByRecruiterName}
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4" /> {job.location}
+                      <MapPin className="h-4 w-4" /> {job.location}
                     </div>
                     <div className="flex items-center gap-2">
-                      <IndianRupee className="w-4 h-4" />{" "}
+                      <IndianRupee className="h-4 w-4" />{' '}
                       {job.salary.toLocaleString()}
                     </div>
                   </div>
 
-                  <div className="card-actions justify-end mt-auto">
-                    <button className="btn btn-outline btn-primary btn-sm">
+                  <div className="card-actions mt-auto justify-end">
+                    <button
+                      onClick={() => navigate(`/jobs/${job.id}`)}
+                      className="btn btn-outline btn-primary btn-sm"
+                    >
                       View Details
                     </button>
                   </div>
@@ -167,7 +173,7 @@ const Jobs = () => {
 
         {/* --- 3. PAGINATION --- */}
         {!loading && totalPages > 1 && (
-          <div className="flex justify-center mt-8 pb-8">
+          <div className="mt-8 flex justify-center pb-8">
             <div className="join">
               <button
                 className="join-item btn"

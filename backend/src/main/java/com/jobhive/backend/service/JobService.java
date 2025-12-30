@@ -71,6 +71,14 @@ public class JobService {
         return mapToResponse(savedJob);
     }
 
+    // 3. Get jobs by id
+    public JobResponse getJobById(Long id){
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + id));
+
+        return mapToResponse(job);
+    }
+
     // Helper 1: convert Entity -> DTO
     private JobResponse mapToResponse(Job job){
         return JobResponse.builder()

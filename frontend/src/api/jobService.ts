@@ -17,3 +17,8 @@ export const getJobs = async (
   const response = await apiClient.get<Page<Job>>(`/jobs`, { params });
   return response.data;
 };
+
+export const getJobById = async (id: string) => {
+  const response = await apiClient.get<Job>(`/jobs/${id}`);
+  return response.data;
+};
