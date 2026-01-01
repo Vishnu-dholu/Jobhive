@@ -79,6 +79,11 @@ public class JobService {
         return mapToResponse(job);
     }
 
+    public List<JobResponse> getJobsByRecruiter(String email){
+        List<Job> jobs = jobRepository.findByPostedByEmail(email);
+        return jobs.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
     // Helper 1: convert Entity -> DTO
     private JobResponse mapToResponse(Job job){
         return JobResponse.builder()

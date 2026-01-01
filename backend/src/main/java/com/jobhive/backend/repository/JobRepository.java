@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long>, JpaSpecificationExecutor<Job> {
@@ -25,4 +26,6 @@ public interface JobRepository extends JpaRepository<Job, Long>, JpaSpecificatio
             @Param("type")JobType type,
             Pageable pageable
             );
+
+    List<Job> findByPostedByEmail(String email);
 }

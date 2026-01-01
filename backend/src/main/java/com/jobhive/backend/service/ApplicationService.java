@@ -179,14 +179,25 @@ public class ApplicationService {
         }
 
         // 3. Load FIle
-        String filePath = application.getResumeUrl();
-        Path path = Paths.get(filePath);
+        String storedFileName = application.getResumeUrl(); // e.g., "uploads/uuid_file.pdf"
 
-        Resource resource = new UrlResource(path.toUri());
+        // Force the path to be relative to the Project Root
+        Path projectRoot = Paths.get(System.getProperty("user.dir"));
+        Path filePath = projectRoot.resolve(storedFileName).normalize();
+
+        System.out.println("🔍 Debug: Looking for file at -> " + filePath.toAbsolutePath()); // Check your console!
+
+        Resource resource = new UrlResource(filePath.toUri());
 
         if(resource.exists() && resource.isReadable()){
             return resource;
         } else {
+            if (!storedFileName.startsWith("uploads")) {
+                Path retryPath = projectRoot.resolve("uploads").resolve(storedFileName).normalize();
+                Resource retryResource = new UrlResource(retryPath.toUri());
+                if (retryResource.exists() && retryResource.isReadable()) return retryResource;
+            }
+
             throw new RuntimeException("Could not read the file!");
         }
     }

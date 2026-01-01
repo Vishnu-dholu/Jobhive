@@ -66,7 +66,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       ? [{ name: 'My Applications', path: '/my-applications', icon: FileText }]
       : []),
     ...(userRole === 'RECRUITER'
-      ? [{ name: 'Post a Job', path: '/post-job', icon: PlusCircle }]
+      ? [
+          { name: 'Post a Job', path: '/post-job', icon: PlusCircle },
+          {
+            name: 'My Posted Job',
+            path: '/recruiter/my-jobs',
+            icon: Briefcase,
+          },
+        ]
       : []),
     { name: 'Profile', path: '/profile', icon: User },
   ];

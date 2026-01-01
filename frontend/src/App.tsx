@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import JobDetails from './pages/JobDetails';
 import MyApplications from './pages/MyApplications';
+import MyPostedJobs from './pages/recruiter/MyPostedJobs';
+import JobApplicants from './pages/recruiter/JobApplicants';
 
 // Placeholders for now
 const Register = () => (
@@ -23,6 +25,11 @@ function App() {
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
         <Route path="/my-applications" element={<MyApplications />} />
+        <Route path="/recruiter/my-jobs" element={<MyPostedJobs />} />
+        <Route
+          path="/recruiter/jobs/:jobId/applications"
+          element={<JobApplicants />}
+        />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
