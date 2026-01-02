@@ -1,9 +1,10 @@
 package com.jobhive.backend.service;
 
+import com.jobhive.backend.dto.UserProfileDTO;
 import com.jobhive.backend.entity.User;
 import com.jobhive.backend.entity.UserProfile;
+import com.jobhive.backend.exception.ResourceNotFoundException;
 import com.jobhive.backend.repository.UserProfileRepository;
-import com.jobhive.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -14,58 +15,73 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
-    private final UserRepository userRepository;
+    private final UserService userService; // Inject Service, not Repo
     private final FileStorageService fileStorageService;
 
-    public UserProfile createOrUpdateProfile(String email, String city, String skills, MultipartFile resumeFile){
+    // 1. GET PROFILE (Merges User + UserProfile data)
+    public UserProfileDTO getProfile(String email) {
+        User user = userService.getUserByEmail(email);
 
-        // 1. Find User
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 2. Store the File
-        String resumeFileName = null;
-        if(resumeFile != null && !resumeFile.isEmpty()){
-            resumeFileName = fileStorageService.storeFile(resumeFile);
-        }
-
-        // 3. Check if profile exists
+        // Find profile or return an empty temporary one if not created yet
         UserProfile profile = userProfileRepository.findByUserId(user.getId())
-                .orElse(new UserProfile()); // Create new if not exists
+                .orElse(new UserProfile());
 
-        // 4. Update fields
-        profile.setUser(user);
-        profile.setCity(city);
-        profile.setSkills(skills);
-
-        // Only update resume path if a new file was uploaded
-        if(resumeFile != null){
-            profile.setResumeFilePath(resumeFileName);
-        }
-
-        return userProfileRepository.save(profile);
+        return UserProfileDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                // Fields from UserProfile entity
+                .headline(profile.getHeadline())
+                .bio(profile.getBio())
+                .location(profile.getLocation())
+                .skills(profile.getSkills())
+                .build();
     }
 
-    // Helper to get profile
-    public UserProfile getProfile(String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    // 2. CREATE OR UPDATE PROFILE (Handles File + Text)
+    public UserProfileDTO createOrUpdateProfile(String email, UserProfileDTO dto, MultipartFile resumeFile) {
+        User user = userService.getUserByEmail(email);
 
-        return userProfileRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
-    }
+        // Fetch existing or create new
+        UserProfile profile = userProfileRepository.findByUserId(user.getId())
+                .orElse(UserProfile.builder().user(user).build());
 
-    // Get the resume file for the logged-in user
-    public Resource getResume(String email){
-        // 1. Get Profile
-        UserProfile profile = getProfile(email);
+        // Update Text Fields
+        profile.setHeadline(dto.getHeadline());
+        profile.setBio(dto.getBio());
+        profile.setLocation(dto.getLocation());
+        profile.setSkills(dto.getSkills());
 
-        // 2. Check if resume exists
-        if(profile.getResumeFilePath() == null){
-            throw new RuntimeException("No resume uploaded for this user.");
+        // Handle File Upload (Optional)
+        if (resumeFile != null && !resumeFile.isEmpty()) {
+            String fileName = fileStorageService.storeFile(resumeFile);
+            profile.setResumeFilePath(fileName);
         }
 
-        // 3. Load file
+        // Save
+        userProfileRepository.save(profile);
+
+        // Update Name in User table if changed
+        if (dto.getName() != null && !dto.getName().equals(user.getName())) {
+            // Note: You might want a specific method in UserService for this
+            user.setName(dto.getName());
+            // Saving via UserProfile doesn't save User automatically unless Cascade is set.
+            // For now, let's assume we aren't updating the name here to keep it simple.
+        }
+
+        return getProfile(email); // Return the updated DTO
+    }
+
+    // 3. GET RESUME
+    public Resource getResume(String email) {
+        User user = userService.getUserByEmail(email);
+        UserProfile profile = userProfileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+
+        if (profile.getResumeFilePath() == null) {
+            throw new RuntimeException("No resume uploaded.");
+        }
         return fileStorageService.loadFileAsResource(profile.getResumeFilePath());
     }
 }

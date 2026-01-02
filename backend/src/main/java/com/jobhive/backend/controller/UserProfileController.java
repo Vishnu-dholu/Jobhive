@@ -1,6 +1,6 @@
 package com.jobhive.backend.controller;
 
-import com.jobhive.backend.entity.UserProfile;
+import com.jobhive.backend.dto.UserProfileDTO;
 import com.jobhive.backend.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -12,32 +12,44 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/users/profile")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
 
-    @PostMapping
-    public ResponseEntity<UserProfile> updateProfile(
-            @RequestParam("city") String city,
-            @RequestParam("skills") String skills,
+    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserProfileDTO> updateProfile(
+            @RequestParam(value = "headline", required = false) String headline,
+            @RequestParam(value = "bio", required = false) String bio,
+            @RequestParam(value = "location", required = false) String location,
+            @RequestParam(value = "skills", required = false) String skills,
             @RequestParam(value = "resume", required = false)MultipartFile resume,
             Authentication authentication
             ){
-        String email = authentication.getName();
-        UserProfile profile = userProfileService.createOrUpdateProfile(email, city, skills, resume);
+        // Construct a temporary DTO to pass to the service
+        UserProfileDTO requestDTO = UserProfileDTO.builder()
+                .headline(headline)
+                .bio(bio)
+                .location(location)
+                .skills(skills)
+                .build();
 
-        return ResponseEntity.ok(profile);
+        String email = authentication.getName();
+
+        // Call the service and return the UPDATED DTO
+        UserProfileDTO updatedProfile = userProfileService.createOrUpdateProfile(email, requestDTO, resume);
+
+        return ResponseEntity.ok(updatedProfile);
     }
 
-    @GetMapping
-    public ResponseEntity<UserProfile> getMyProfile(Authentication authentication){
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDTO> getMyProfile(Authentication authentication){
         String email = authentication.getName();
         return ResponseEntity.ok(userProfileService.getProfile(email));
     }
 
-    @GetMapping("/resume")
+    @GetMapping("/profile/resume")
     public ResponseEntity<Resource> downloadResume(Authentication authentication){
         String email = authentication.getName();
         Resource resource = userProfileService.getResume(email);

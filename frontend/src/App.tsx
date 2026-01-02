@@ -7,12 +7,12 @@ import JobDetails from './pages/JobDetails';
 import MyApplications from './pages/MyApplications';
 import MyPostedJobs from './pages/recruiter/MyPostedJobs';
 import JobApplicants from './pages/recruiter/JobApplicants';
+import Profile from './pages/Profile';
 
 // Placeholders for now
 const Register = () => (
   <h1 className="mt-10 text-center">Register Page (Coming Soon)</h1>
 );
-const Profile = () => <div className="p-10 text-center">Profile Page</div>;
 
 function App() {
   return (

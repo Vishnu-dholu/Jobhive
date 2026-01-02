@@ -23,7 +23,11 @@ public class UserProfile {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    private String city;
+    private String headline;
+
+    @Column(length = 1000)
+    private String bio;
+    private String location;
     private String skills;          // Store as comma-separated string
     private String resumeFilePath;  // The path to the PDF on disk
 
