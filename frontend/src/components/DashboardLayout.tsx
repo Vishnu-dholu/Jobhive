@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   PlusCircle,
+  Shield,
   User,
 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -74,6 +75,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             icon: Briefcase,
           },
         ]
+      : []),
+    ...(userRole === 'ADMIN'
+      ? [{ name: 'Admin Panel', path: '/admin', icon: Shield }]
       : []),
     { name: 'Profile', path: '/profile', icon: User },
   ];
