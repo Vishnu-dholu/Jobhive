@@ -26,13 +26,14 @@ public class JobController {
     // GET  /api/jobs
     @GetMapping
     public ResponseEntity<Page<JobResponse>> getAllJobs(
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String location,
             @RequestParam(required = false)BigDecimal minSalary,
             @RequestParam(required = false)JobType type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-            ){
-        return ResponseEntity.ok(jobService.getAllJobs(location, minSalary, type, page, size));
+    ){
+        return ResponseEntity.ok(jobService.getAllJobs(keyword, location, minSalary, type, page, size));
     }
 
     // POST /api/jobs

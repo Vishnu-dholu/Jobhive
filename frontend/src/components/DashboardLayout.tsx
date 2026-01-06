@@ -63,7 +63,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Find Jobs', path: '/jobs', icon: Briefcase },
-    ...(userRole !== 'RECRUITER'
+    ...(userRole !== 'RECRUITER' && userRole !== 'ADMIN'
       ? [{ name: 'My Applications', path: '/my-applications', icon: FileText }]
       : []),
     ...(userRole === 'RECRUITER'

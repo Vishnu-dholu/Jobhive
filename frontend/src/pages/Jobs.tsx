@@ -17,6 +17,7 @@ const Jobs = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   // Filter state
+  const [keyword, setKeyword] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
 
@@ -25,6 +26,7 @@ const Jobs = () => {
     setLoading(true);
     try {
       const data = await getJobs(
+        keyword,
         page,
         9,
         locationFilter,
@@ -62,6 +64,23 @@ const Jobs = () => {
               onSubmit={handleSearch}
               className="flex flex-col items-end gap-4 md:flex-row"
             >
+              {/* Keyword Input */}
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text font-bold">Search</span>
+                </label>
+                <label className="input input-bordered flex items-center gap-2">
+                  <Search className="h-4 w-4 opacity-70" />
+                  <input
+                    type="text"
+                    className="grow"
+                    placeholder="Java, Manager..."
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                  />
+                </label>
+              </div>
+
               {/* Location Input */}
               <div className="form-control w-full md:w-1/3">
                 <label className="label">
@@ -90,7 +109,7 @@ const Jobs = () => {
                   onChange={(e) => setTypeFilter(e.target.value)}
                 >
                   <option value="">All types</option>
-                  <option value="ON_SITE">On Site</option>
+                  <option value="ONSITE">On Site</option>
                   <option value="REMOTE">Remote</option>
                   <option value="HYBRID">Hybrid</option>
                 </select>

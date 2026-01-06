@@ -2,12 +2,16 @@ import apiClient from './axiosClient';
 import type { Job, Page } from '../types/job';
 
 export const getJobs = async (
+  keyword: string = '',
   page: number = 0,
   size: number = 9,
   location: string,
   type?: string
 ) => {
   const params = new URLSearchParams();
+
+  if (keyword) params.append('keyword', keyword);
+
   params.append('page', page.toString());
   params.append('size', size.toString());
 

@@ -12,24 +12,34 @@ import java.util.List;
 public class JobSpecification {
 
     // This static method returns the logic to filter jobs
-    public static Specification<Job> filterJobs(String location, BigDecimal minSalary, JobType type){
+    public static Specification<Job> filterJobs(String keyword, String location, BigDecimal minSalary, JobType type){
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Filter by Location (Partial Match, Case Insensitive)
+            // 1. Keyword Search (Title OR Description)
+            if(keyword != null && !keyword.isEmpty()){
+                String likePattern = "%" + keyword.toLowerCase() + "%";
+                Predicate titleMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern);
+                Predicate descMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern);
+
+                // (Title LIKE %key% OR Description LIKE %key%)
+                predicates.add(criteriaBuilder.or(titleMatch, descMatch));
+            }
+
+            // 2. Filter by Location (Partial Match, Case Insensitive)
             // SQL: WHERE LOWER(location) LIKE %mumbai%
             if(location != null && !location.isEmpty()){
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("location")),
                         "%" + location.toLowerCase() + "%"));
             }
 
-            // 2. Filter by Minimum Salary
+            // 3. Filter by Minimum Salary
             // SQL: WHERE salary >= 500000
             if(minSalary != null){
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("salary"), minSalary));
             }
 
-            // 3. Filter by Job Type (Exact Match)
+            // 4. Filter by Job Type (Exact Match)
             // SQL: WHERE type = 'REMOTE'
             if(type != null){
                 predicates.add(criteriaBuilder.equal(root.get("type"), type));

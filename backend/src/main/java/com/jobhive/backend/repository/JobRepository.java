@@ -15,17 +15,6 @@ import java.util.List;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long>, JpaSpecificationExecutor<Job> {
-    // The Query handles nulls: (:param IS NULL OR column = :param)
-    @Query("SELECT j FROM Job j WHERE " +
-        "(:location IS NULL OR j.location LIKE %:location%) AND " +
-            "(:minSalary IS NULL OR j.salary >= :minSalary) AND " +
-            "(:type IS NULL OR j.type = :type)")
-    Page<Job> searchJobs(
-            @Param("location") String location,
-            @Param("minSalary")BigDecimal minSalary,
-            @Param("type")JobType type,
-            Pageable pageable
-            );
 
     List<Job> findByPostedByEmail(String email);
 }
