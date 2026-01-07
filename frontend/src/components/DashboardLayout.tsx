@@ -2,6 +2,7 @@ import { jwtDecode } from 'jwt-decode';
 import {
   Briefcase,
   FileText,
+  Heart,
   LayoutDashboard,
   LogOut,
   PlusCircle,
@@ -64,7 +65,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Find Jobs', path: '/jobs', icon: Briefcase },
     ...(userRole !== 'RECRUITER' && userRole !== 'ADMIN'
-      ? [{ name: 'My Applications', path: '/my-applications', icon: FileText }]
+      ? [
+          { name: 'My Applications', path: '/my-applications', icon: FileText },
+          { name: 'Saved Jobs', path: '/saved-jobs', icon: Heart },
+        ]
       : []),
     ...(userRole === 'RECRUITER'
       ? [

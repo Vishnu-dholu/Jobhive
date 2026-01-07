@@ -71,9 +71,38 @@ public class JobService {
         return mapToResponse(job);
     }
 
+    // 4. Get jobs create by a recruiter
     public List<JobResponse> getJobsByRecruiter(String email){
         List<Job> jobs = jobRepository.findByPostedByEmail(email);
         return jobs.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    // 5. Toggle Saved Job
+    public void toggleSavedJob(Long jobId, String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+
+        // Logic: If saved, remove it. If not saved, add it.
+        if(user.getSaveJobs().contains(job)){
+            user.getSaveJobs().remove(job);
+        }
+        else {
+            user.getSaveJobs().add(job);
+        }
+
+        userRepository.save(user);
+    }
+
+    public List<JobResponse> getSavedJobs(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        return user.getSaveJobs().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     // Helper 1: convert Entity -> DTO

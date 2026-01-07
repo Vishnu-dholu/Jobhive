@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import type { Job } from '../types/job';
-import { getJobs } from '../api/jobService';
+import { getJobs, getMySavedJobs, toggleSavedJob } from '../api/jobService';
 import toast from 'react-hot-toast';
 import DashboardLayout from '../components/DashboardLayout';
-import { Briefcase, IndianRupee, MapPin, Search } from 'lucide-react';
+import { Briefcase, Heart, IndianRupee, MapPin, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Jobs = () => {
   const navigate = useNavigate();
 
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [savedJobIds, setSavedJobIds] = useState<Number[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Pagination state
@@ -42,9 +43,35 @@ const Jobs = () => {
     }
   };
 
+  const fetchSavedStatus = async () => {
+    try {
+      const saved = await getMySavedJobs();
+      setSavedJobIds(saved.map((j) => j.id));
+    } catch (error) {
+      console.error('Failed to fetch save');
+    }
+  };
+
+  const handleToggleSave = async (jobId: number) => {
+    try {
+      await toggleSavedJob(jobId);
+
+      if (savedJobIds.includes(jobId)) {
+        setSavedJobIds(savedJobIds.filter((id) => id !== jobId));
+        toast.success('Removed from saved');
+      } else {
+        setSavedJobIds([...savedJobIds, jobId]);
+        toast.success('Job saved');
+      }
+    } catch (error) {
+      toast.error('Action failed');
+    }
+  };
+
   // Load on Mount & when Page changes
   useEffect(() => {
     fetchJobs();
+    fetchSavedStatus();
   }, [page]); // Re-runs when page number changes
 
   // Handle Search submit
@@ -140,24 +167,35 @@ const Jobs = () => {
                 className="card bg-base-100 border-base-200 border shadow-xl transition-shadow duration-300 hover:shadow-2xl"
               >
                 <div className="card-body">
-                  <h2 className="card-title text-primary">
-                    {job.title}
-                    {job.type === 'REMOTE' && (
-                      <div className="badge badge-secondary badge-sm">
-                        REMOTE
-                      </div>
-                    )}
+                  <div className="flex items-start justify-between">
+                    <h2 className="card-title text-primary">
+                      {job.title}
+                      {job.type === 'REMOTE' && (
+                        <div className="badge badge-secondary badge-sm">
+                          REMOTE
+                        </div>
+                      )}
 
-                    {job.type === 'HYBRID' && (
-                      <div className="badge badge-accent badge-sm text-white">
-                        HYBRID
-                      </div>
-                    )}
+                      {job.type === 'HYBRID' && (
+                        <div className="badge badge-accent badge-sm text-white">
+                          HYBRID
+                        </div>
+                      )}
 
-                    {job.type === 'ONSITE' && (
-                      <div className="badge badge-ghost badge-sm">ONSITE</div>
-                    )}
-                  </h2>
+                      {job.type === 'ONSITE' && (
+                        <div className="badge badge-ghost badge-sm">ONSITE</div>
+                      )}
+                    </h2>
+
+                    <button
+                      onClick={() => handleToggleSave(job.id)}
+                      className="btn btn-ghost btn-circle btn-sm"
+                    >
+                      <Heart
+                        className={`h-6 w-6 ${savedJobIds.includes(job.id) ? 'fill-error text-error' : 'text-gray-400'}`}
+                      />
+                    </button>
+                  </div>
                   <p className="mb-4 line-clamp-2 text-sm text-gray-500">
                     {job.description}
                   </p>

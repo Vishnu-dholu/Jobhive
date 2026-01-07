@@ -31,3 +31,13 @@ export const getMyPostedJobs = async () => {
   const response = await apiClient.get<Job[]>('/jobs/my-jobs');
   return response.data;
 };
+
+export const toggleSavedJob = async (jobId: number) => {
+  const response = await apiClient.post<String>(`/jobs/${jobId}/save`);
+  return response.data;
+};
+
+export const getMySavedJobs = async () => {
+  const response = await apiClient.get<Job[]>('/jobs/saved');
+  return response.data;
+};

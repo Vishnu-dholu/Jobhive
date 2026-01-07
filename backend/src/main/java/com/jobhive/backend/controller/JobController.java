@@ -57,4 +57,16 @@ public class JobController {
         String email = authentication.getName();
         return ResponseEntity.ok(jobService.getJobsByRecruiter(email));
     }
+
+    @PostMapping("/{id}/save")
+    public ResponseEntity<String> toggleSavedJob(@PathVariable Long id, Authentication authentication){
+        jobService.toggleSavedJob(id, authentication.getName());
+        return ResponseEntity.ok("Job saved successfully");
+    }
+
+    @GetMapping("/saved")
+    public ResponseEntity<List<JobResponse>> getMySavedJobs(Authentication authentication){
+        String email = authentication.getName();
+        return ResponseEntity.ok(jobService.getSavedJobs(email));
+    }
 }

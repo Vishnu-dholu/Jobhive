@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Data   // Lombok: Generates Getters, Setters, toString
@@ -30,4 +33,12 @@ public class User {
     @Enumerated(EnumType.STRING)    // Stores "ADMIN" as a string in DB, not a number
     @Column(nullable = false)
     private Role role;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_saved_jobs" ,                          // Name of the hidden bridge table
+            joinColumns = @JoinColumn(name = "user_id"),        // FK to User
+            inverseJoinColumns = @JoinColumn(name = "job_id")   // FK to Job
+    )
+    private Set<Job> saveJobs = new HashSet<>();
 }

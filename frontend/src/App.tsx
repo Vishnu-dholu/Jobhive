@@ -9,6 +9,7 @@ import MyPostedJobs from './pages/recruiter/MyPostedJobs';
 import JobApplicants from './pages/recruiter/JobApplicants';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import SavedJobs from './pages/SavedJobs';
 
 // Placeholders for now
 const Register = () => (
@@ -33,6 +34,7 @@ function App() {
         />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/saved-jobs" element={<SavedJobs />} />
       </Routes>
     </Router>
   );
