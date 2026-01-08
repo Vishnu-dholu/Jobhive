@@ -18,4 +18,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     // 3. Find all applications by a specific User (For Applicants)
     List<Application> findByApplicantId(Long applicantId);
+
+    List<Application> findByJobPostedByEmail(String email);
 }

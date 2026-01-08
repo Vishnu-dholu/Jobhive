@@ -178,7 +178,7 @@ public class ApplicationService {
             throw new RuntimeException("Unauthorized: You cannot access this resume");
         }
 
-        // 3. Load FIle
+        // 3. Load File
         String storedFileName = application.getResumeUrl(); // e.g., "uploads/uuid_file.pdf"
 
         // Force the path to be relative to the Project Root
@@ -200,5 +200,21 @@ public class ApplicationService {
 
             throw new RuntimeException("Could not read the file!");
         }
+    }
+
+    public List<ApplicationDTO> getApplicationsForRecruiter(String email) {
+        List<Application> applications = applicationRepository.findByJobPostedByEmail(email);
+
+        return applications.stream().map(app -> ApplicationDTO.builder()
+                .id(app.getId())
+                .jobId(app.getJob().getId())
+                .jobTitle(app.getJob().getTitle())
+                .applicantId(app.getApplicant().getId())
+                .applicantName(app.getApplicant().getName())
+                .applicantEmail(app.getApplicant().getEmail())
+                .status(app.getStatus())
+                .appliedAt(app.getAppliedAt())
+                .build()
+        ).collect(Collectors.toList());
     }
 }

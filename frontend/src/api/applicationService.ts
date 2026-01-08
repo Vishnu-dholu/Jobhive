@@ -74,3 +74,10 @@ export const downloadResume = async (appId: number, fileName: string) => {
   link.click();
   link.remove();
 };
+
+export const getRecruiterApplications = async () => {
+  const response = await apiClient.get<Application[]>(
+    '/applications/recruiter'
+  );
+  return response.data;
+};

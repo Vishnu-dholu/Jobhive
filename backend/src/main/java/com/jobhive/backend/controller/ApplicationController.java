@@ -78,4 +78,10 @@ public class ApplicationController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    @GetMapping("/recruiter")
+    @PreAuthorize("hasAnyRole('RECRUITER')")
+    public ResponseEntity<List<ApplicationDTO>> getRecruiterApplications(Authentication authentication){
+        return ResponseEntity.ok(applicationService.getApplicationsForRecruiter(authentication.getName()));
+    }
 }

@@ -8,6 +8,7 @@ import {
   PlusCircle,
   Shield,
   User,
+  Users,
 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -77,6 +78,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             name: 'My Posted Job',
             path: '/recruiter/my-jobs',
             icon: Briefcase,
+          },
+          {
+            name: 'Manage Candidates',
+            path: '/recruiter/applications',
+            icon: Users,
           },
         ]
       : []),
