@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
-    private final UserService userService; // Inject Service, not Repo
+    private final UserService userService;
     private final FileStorageService fileStorageService;
 
     // 1. GET PROFILE (Merges User + UserProfile data)
@@ -36,6 +36,7 @@ public class UserProfileService {
                 .bio(profile.getBio())
                 .location(profile.getLocation())
                 .skills(profile.getSkills())
+                .hasResume(profile.getResumeFilePath() != null && !profile.getResumeFilePath().isEmpty())
                 .build();
     }
 

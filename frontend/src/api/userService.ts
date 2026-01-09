@@ -9,6 +9,7 @@ export interface UserProfile {
   bio?: string;
   location?: string;
   skills?: string;
+  hasResume: boolean;
 }
 
 // Get Profile
@@ -46,9 +47,24 @@ export const updateMyProfile = async (
   return response.data;
 };
 
-// Helper to get resume URL
-export const getResumeDownloadUrl = () => {
-  const token = localStorage.getItem('token');
+export const downloadResume = async (fileName: string) => {
+  try {
+    const response = await apiClient.get('/users/profile/resume', {
+      responseType: 'blob',
+    });
 
-  return `http:localhost:8080/api/users/profile/resume`;
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    // Set the filename for the download
+    link.setAttribute('download', fileName || 'resume.pdf');
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Download failed', error);
+    throw error;
+  }
 };

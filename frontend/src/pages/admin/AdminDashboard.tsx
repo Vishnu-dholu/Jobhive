@@ -108,7 +108,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* TABS */}
-      <div className="tabs tabs-boxed mb-6">
+      {/* <div className="tabs tabs-boxed mb-6">
         <a
           className={`tab ${activeTab === 'users' ? 'tab-active' : ''}`}
           onClick={() => setActiveTab('users')}
@@ -121,6 +121,36 @@ const AdminDashboard = () => {
         >
           Manage Jobs
         </a>
+      </div> */}
+
+      <div className="mb-8 flex justify-center">
+        <div className="bg-base-200 inline-flex rounded-xl p-1 shadow-inner">
+          {/* Users Tab */}
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+              activeTab === 'users'
+                ? 'text-primary scale-105 bg-white shadow-md'
+                : 'hover:bg-base-300 text-gray-500 hover:text-gray-700'
+            } `}
+          >
+            <Users className="h-4 w-4" />
+            Manage Users
+          </button>
+
+          {/* Jobs Tab */}
+          <button
+            onClick={() => setActiveTab('jobs')}
+            className={`flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+              activeTab === 'jobs'
+                ? 'text-primary scale-105 bg-white shadow-md'
+                : 'hover:bg-base-300 text-gray-500 hover:text-gray-700'
+            } `}
+          >
+            <Briefcase className="h-4 w-4" />
+            Manage Jobs
+          </button>
+        </div>
       </div>
 
       {/* TABLE CONTENT */}

@@ -45,9 +45,11 @@ const SavedJobs = () => {
           <span className="loading loading-spinner text-primary"></span>
         </div>
       ) : jobs.length === 0 ? (
-        <div>
+        <div className="py-20 text-center text-gray-500">
           <p className="text-lg">You haven't saved any jobs yet!</p>
-          <button onClick={() => navigate('/jobs')}>Browse Jobs</button>
+          <button onClick={() => navigate('/jobs')} className="btn btn-link">
+            Browse Jobs
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -16,4 +16,6 @@ public class UserProfileDTO {
     private String bio;
     private String location;
     private String skills;
+
+    private boolean hasResume;
 }

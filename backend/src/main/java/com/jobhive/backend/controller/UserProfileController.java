@@ -61,7 +61,7 @@ public class UserProfileController {
                 // Content-Type: application/pdf (Force browser to handle it as file)
                 .contentType(MediaType.APPLICATION_PDF)
                 // Content-Disposition: inline (View in browser) or attachment (Download)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                 .body(resource);
     }
 }

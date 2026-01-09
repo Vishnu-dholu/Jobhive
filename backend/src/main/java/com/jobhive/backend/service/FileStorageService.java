@@ -20,7 +20,7 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     // Read the "file.upload-dir" property from applicaton.properties
-    public FileStorageService(@Value("${file.upload-dir") String uploadDir){
+    public FileStorageService(@Value("${file.upload-dir}") String uploadDir){
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         try{

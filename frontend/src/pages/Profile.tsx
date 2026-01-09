@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  downloadResume,
   getMyProfile,
   updateMyProfile,
   type UserProfile,
@@ -9,6 +10,7 @@ import DashboardLayout from '../components/DashboardLayout';
 import {
   Briefcase,
   Code,
+  Download,
   Edit2,
   FileText,
   MapPin,
@@ -54,8 +56,16 @@ const Profile = () => {
   };
 
   const handleDownloadResume = async () => {
-    if (!profile?.id) return;
-    toast.error('Resume download implementation pending');
+    if (!profile?.name) return;
+    const toastId = toast.loading('Downloading...');
+
+    try {
+      const fileName = `${profile.name.replace(/\s+/g, '_')}_Resume.pdf`;
+      await downloadResume(fileName);
+      toast.success('Download complete', { id: toastId });
+    } catch (error) {
+      toast.error('No resume found or download failed', { id: toastId });
+    }
   };
 
   if (loading)
@@ -251,14 +261,28 @@ const Profile = () => {
                     />
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-sm text-gray-500">
-                      Manage your default resume here. This will be used when
-                      you apply for jobs.
-                    </p>
-                    <div className="badge badge-ghost">
-                      To download, apply to a job first (Temporary)
-                    </div>
+                  <div className="flex flex-col gap-3">
+                    {profile?.hasResume ? (
+                      <>
+                        <p className="text-sm text-gray-500">
+                          Your current resume is stored securely. Recruiters can
+                          view it when you apply.
+                        </p>
+                        <button
+                          onClick={handleDownloadResume}
+                          className="btn btn-accent btn-outline w-full gap-2"
+                        >
+                          <Download className="h-4 w-4" /> Download My CV
+                        </button>
+                      </>
+                    ) : (
+                      <div className="alert alert-warning text-sm shadow-sm">
+                        <span>
+                          No resume uploaded yet. Click{' '}
+                          <strong>Edit Profile</strong> to upload one.
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

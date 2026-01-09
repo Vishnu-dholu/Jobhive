@@ -34,7 +34,7 @@ const MyPostedJobs = () => {
           <Briefcase className="text-primary h-6 w-6" /> My Posted Jobs
         </h1>
         <button
-          onClick={() => navigate('/post-job')}
+          onClick={() => navigate('/post-jobs')}
           className="btn btn-primary btn-sm"
         >
           + Post New Job

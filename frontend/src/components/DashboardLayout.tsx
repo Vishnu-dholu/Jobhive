@@ -89,7 +89,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     ...(userRole === 'ADMIN'
       ? [{ name: 'Admin Panel', path: '/admin', icon: Shield }]
       : []),
-    { name: 'Profile', path: '/profile', icon: User },
+    ...(userRole === 'ADMIN'
+      ? []
+      : [{ name: 'Profile', path: '/profile', icon: User }]),
   ];
 
   return (
