@@ -12,6 +12,7 @@ import com.jobhive.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -216,5 +217,19 @@ public class ApplicationService {
                 .appliedAt(app.getAppliedAt())
                 .build()
         ).collect(Collectors.toList());
+    }
+
+    public void sendCustomEmail(Long applicationId, String subject, String body, String recruiterEmail) {
+
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        // Security Check: Ensure the logged-in Recruiter owns the Job associated with this application
+        if (!application.getJob().getPostedBy().getEmail().equals(recruiterEmail)) {
+            throw new RuntimeException("Unauthorized: You cannot contact applicants for jobs you didn't post.");
+        }
+
+        String to = application.getApplicant().getEmail();
+        emailService.sendEmail(to, subject, body);
     }
 }

@@ -84,4 +84,11 @@ public class ApplicationController {
     public ResponseEntity<List<ApplicationDTO>> getRecruiterApplications(Authentication authentication){
         return ResponseEntity.ok(applicationService.getApplicationsForRecruiter(authentication.getName()));
     }
+
+    @PostMapping("/{id}/email")
+    @PreAuthorize("hasAnyRole('RECRUITER')")
+    public ResponseEntity<String> sendEmail(@PathVariable Long id, @RequestParam String subject, @RequestParam String body, Authentication authentication){
+        applicationService.sendCustomEmail(id, subject, body, authentication.getName());
+        return ResponseEntity.ok("Email sent successfully");
+    }
 }

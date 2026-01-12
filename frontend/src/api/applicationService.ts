@@ -81,3 +81,21 @@ export const getRecruiterApplications = async () => {
   );
   return response.data;
 };
+
+export const sendEmailToCandidate = async (
+  appId: number,
+  subject: string,
+  body: string
+) => {
+  // const params = new URLSearchParams();
+  // params.append('subject', subject);
+  // params.append('body', body);
+
+  const response = await apiClient.post(`/applications/${appId}/email`, null, {
+    params: {
+      subject: subject,
+      body: body,
+    },
+  });
+  return response.data;
+};
