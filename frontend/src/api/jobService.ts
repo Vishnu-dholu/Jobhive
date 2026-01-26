@@ -1,11 +1,11 @@
 import apiClient from './axiosClient';
-import type { Job, Page } from '../types/job';
+import type { Job, JobRequest, Page } from '../types/job';
 
 export const getJobs = async (
   keyword: string = '',
   page: number = 0,
   size: number = 9,
-  location: string,
+  location?: string,
   type?: string
 ) => {
   const params = new URLSearchParams();
@@ -39,5 +39,10 @@ export const toggleSavedJob = async (jobId: number) => {
 
 export const getMySavedJobs = async () => {
   const response = await apiClient.get<Job[]>('/jobs/saved');
+  return response.data;
+};
+
+export const postJob = async (jobData: JobRequest) => {
+  const response = await apiClient.post<Job>('/jobs', jobData);
   return response.data;
 };

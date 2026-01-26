@@ -17,5 +17,6 @@ public class JobResponse {
     private BigDecimal salary;
     private JobType type;
     private LocalDateTime postedAt;
-    private String postedByRecruiterName;   // Just the name
+    private String postedByRecruiterName;
+    private String requirements;
 }

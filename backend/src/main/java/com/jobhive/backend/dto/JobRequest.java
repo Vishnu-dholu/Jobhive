@@ -26,4 +26,7 @@ public class JobRequest {
 
     @NotNull(message = "Job Type is required")
     private JobType type;
+
+    @NotNull(message = "Requirements is necessary")
+    private String requirements;
 }

@@ -4,7 +4,7 @@ export interface Job {
   description: string;
   location: string;
   salary: number;
-  type: "REMOTE" | "ONSITE" | "HYBRID";
+  type: 'REMOTE' | 'ONSITE' | 'HYBRID';
   postedAt: string;
   postedByRecruiterName: string;
 }
@@ -18,4 +18,13 @@ export interface Page<T> {
   first: boolean;
   last: boolean;
   empty: boolean;
+}
+
+export interface JobRequest {
+  title: string;
+  description: string;
+  location: string;
+  salary: number;
+  requirements: string;
+  jobType?: string;
 }

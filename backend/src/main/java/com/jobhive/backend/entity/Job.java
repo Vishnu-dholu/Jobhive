@@ -41,6 +41,9 @@ public class Job {
     @CreationTimestamp
     private LocalDateTime postedAt;
 
+    @Column(columnDefinition = "TEXT")
+    private String requirements;
+
     //  --- RELATIONSHIP ---
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "posted_by_id", nullable = false)    // The Foreign Key column name

@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # 1. DATABASE SERVICE
+  db:
+    image: postgres:15-alpine
+    container_name: jobhive_db
+    environment:
+      POSTGRES_DB: jobhive_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: jobhive123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. BACKEND SERVICE
+  backend:
+    build: ./backend
+    container_name: jobhive_backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Override localhost with the service name 'db'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/jobhive_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: jobhive123
+      # Files folder
+      FILE_UPLOAD_DIR: /app/uploads
+      # Mailtrap (Pass through your existing credentials)
+      SPRING_MAIL_HOST: sandbox.smtp.mailtrap.io
+      SPRING_MAIL_PORT: 2525
+      SPRING_MAIL_USERNAME: 0364320832a04a
+      SPRING_MAIL_PASSWORD: bb8e0f8d6508cc
+    depends_on:
+      - db
+    volumes:
+      # Persist uploads even if container restarts
+      - ./uploads:/app/uploads
+
+  # 3. FRONTEND SERVICE
+  frontend:
+    build: ./frontend
+    container_name: jobhive_frontend
+    ports:
+      - "3000:80"  # Map local port 3000 to Nginx port 80
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
