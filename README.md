@@ -131,12 +131,6 @@ Contributions are welcome!
 
 ---
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
 ### 🌟 Show your support
 
 Give a ⭐️ if this project helped you!
